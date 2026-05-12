@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Brevo Email PoC</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 720px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        h1 {
+            margin-bottom: 8px;
+        }
+
+        p {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .field {
+            margin: 20px 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 18px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        pre {
+            margin-top: 24px;
+            padding: 16px;
+            background-color: #f4f4f4;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+<h1>Brevo Email PoC</h1>
+
+<p>
+    이 화면에서는 Brevo SMTP relay 방식과 Brevo SDK 방식을 각각 테스트한다.
+    두 버튼 모두 동일한 활성화 이메일 템플릿을 사용하지만, 백엔드에서 호출하는 발송 구현체가 다르다.
+</p>
+
+<div class="field">
+    <label for="email">받는 이메일</label>
+    <input id="email" type="email" placeholder="test@example.com">
+</div>
+
+<div class="buttons">
+    <button onclick="sendActivationEmail('smtp')">
+        SMTP 방식으로 활성화 이메일 보내기
+    </button>
+
+    <button onclick="sendActivationEmail('brevo-sdk')">
+        Brevo SDK 방식으로 활성화 이메일 보내기
+    </button>
+</div>
+
+<pre id="result">요청 결과가 여기에 표시됩니다.</pre>
+
+<script>
+    async function sendActivationEmail(type) {
+        const email = document.getElementById('email').value;
+        const result = document.getElementById('result');
+
+        if (!email) {
+            result.textContent = '이메일을 입력하세요.';
+            return;
+        }
+
+        const endpoint = `/api/poc/email/${type}`;
+
+        try {
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({email})
+            });
+
+            const data = await response.json();
+
+            result.textContent = JSON.stringify({
+                status: response.status,
+                response: data
+            }, null, 2);
+        } catch (error) {
+            result.textContent = '요청 실패: ' + error.message;
+        }
+    }
+</script>
+</body>
+</html>
