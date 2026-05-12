@@ -2,7 +2,7 @@ spring:
   application:
     name: email-poc
   datasource:
-    url: jdbc:h2:mem:brevo-poc
+    url: jdbc:h2:mem:emailpoc;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     driver-class-name: org.h2.Driver
     username: sa
     password:
